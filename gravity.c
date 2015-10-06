@@ -18,7 +18,7 @@ typedef struct vector
 	double z;
 } vector;
 
-vector null_vector = (vector) {0, 0, 0};
+const vector null_vector = (vector) {0, 0, 0};
 
 /*  scales one vector by a double  */
 vector scale(vector a, double k)
@@ -143,13 +143,19 @@ void simulate_grav_single(grav_body *a, grav_body *b)
 	vector dist = subtract(b->position, a->position);
 	vector grav_force = scale(normalize(dist), (G * a->mass * b->mass / pow(magnitude(dist), 2)));
 	a->acceleration = add(a->acceleration, scale(grav_force, 1 / a->mass));
-	b->acceleration = add(a->acceleration, scale(negate(grav_force), 1 / b->mass));
+	b->acceleration = add(b->acceleration, scale(negate(grav_force), 1 / b->mass));
 }
 
 /*	makes a call to simulate each system individually exactly once  */
 void simulate_grav_full(universe *u)
 {
 	int i, j;
+	
+	/*	resets acceleration of each body to zero  */
+	for (i = 0; i < u->num_bodies; i++)
+	{
+		u->body[i].acceleration = null_vector;
+	}
 	
 	for (i = 0; i < u->num_bodies; i++)
 	{	
@@ -161,9 +167,6 @@ void simulate_grav_full(universe *u)
 		/*	iterates using the basic kinematics equations over time_step  */
 		u->body[i].position = add(u->body[i].position, add(scale(u->body[i].velocity, u->time_step), scale(u->body[i].acceleration, 0.5 * pow(u->time_step, 2))));
 		u->body[i].velocity = add(u->body[i].velocity, scale(u->body[i].acceleration, u->time_step));
-		
-		/*	resets acceleration in preparation for the next iteration  */
-		u->body[i].acceleration = null_vector;
 	}
 	
 	u->current_time += u->time_step;
@@ -172,16 +175,14 @@ void simulate_grav_full(universe *u)
 /*	main function  */
 int main(void)
 {
-	int i, j;
 	clock_t start;
+	double sim_time = 3.154e+7;
 	
-	/*	so we can compare to Kepler's formulas for debugging purposes  */
-	double orbital_period = 7.691162248e105;
-	
+	/*	defines universe  */
 	universe u;
+	u.current_time = 0;
+	u.time_step = 1;
 	u.num_bodies = 2;
-	u.time_step = 1e105;
-	
 	u.body = calloc(u.num_bodies, sizeof(grav_body));
 	
 	/*	terminates if calloc fails  */
@@ -195,35 +196,26 @@ int main(void)
 		return(EXIT_SUCCESS);
 	}
 	
-	for (i = 0; i < 20; i++)
+	u.body[0] = (grav_body) {"Sun", 1.98855e30, (vector) {0, 0, 0}, (vector) {0,0,0}};
+	u.body[1] = (grav_body) {"Comet", 1e3, (vector) {5.9e9, 0, 0}, (vector) {0, 149978.8942, 0}};
+	
+	/*	prints the initial state  */
+	printf("----INITIAL STATE----\n");
+	print_universe(u);
+	
+	/*	starts the clock  */
+	start = clock();
+	while (u.current_time < sim_time)
 	{
-		/*	reset the state of the universe  */
-		u.current_time = 0;
-		u.body[0] = (grav_body) {"Black Hole", 1e100, (vector) {0, 0, 0}, (vector) {0,0,0}};
-		u.body[1] = (grav_body) {"Comet", 1, (vector) {0, 1e100, 0}, (vector) {-8.16935738e-6, 0, 0}};
-		
-		/*	prints the initial state only once  */
-		if (i == 0)
-		{
-			printf("----INITIAL STATE----\n");
-			print_universe(u);
-		}
-		
-		/*	starts the clock  */
-		start = clock();
-
-		for (j = 0; u.current_time < orbital_period; j++)
-		{
-			simulate_grav_full(&u);
-		}
-
-		/*  ends the clock and displays time elapsed  */
-		printf("CPU time elapsed: %.2lf s\n", ((double) (clock() - start) / CLOCKS_PER_SEC));
-		
-		print_universe(u);
-		
-		u.time_step *= 0.1;
+		simulate_grav_full(&u);
 	}
+
+	/*	prints the final state  */
+	printf("----FINAL STATE----\n");
+	print_universe(u);
+	
+	/*  ends the clock and displays time elapsed  */
+	printf("CPU time elapsed: %.2lf s\n", ((double) (clock() - start) / CLOCKS_PER_SEC));
 	
 	free(u.body);
 	
