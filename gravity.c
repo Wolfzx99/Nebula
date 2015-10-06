@@ -99,7 +99,7 @@ typedef struct grav_body
 
 void print_grav_body(grav_body a)
 {
-	printf("[%s] mass: %.4e position: <%.4e,%.4e,%.4e> velocity: <%.4e,%.4e,%.4e>\n", a.name, a.mass, a.position.x, a.position.y, a.position.z, a.velocity.x, a.velocity.y, a.velocity.z);
+	printf("\t[%s]\n\tmass: %.2e\n\tposition: <%.2e,%.2e,%.2e>\n\tvelocity: <%.2e,%.2e,%.2e>\n", a.name, a.mass, a.position.x, a.position.y, a.position.z, a.velocity.x, a.velocity.y, a.velocity.z);
 }
 
 /*	a universe defined in terms its state, its precision, and its current time  */
@@ -115,6 +115,20 @@ typedef struct universe
 	/*	time since the simulation began (in seconds)  */
 	double current_time;
 } universe;
+
+void print_universe(universe u)
+{
+	int i;
+	
+	printf("universe time: %.2e\ntime step: %.2e\n\n", u.current_time, u.time_step);
+	
+	for (i = 0; i < u.num_bodies; i++)
+	{
+		print_grav_body(u.body[i]);
+	}
+	
+	printf("\n");
+}
 
 /*	gives every body a random mass, position, and velocity  */
 void randomize_universe(universe u)
@@ -161,39 +175,50 @@ int main(void)
 	int i, j;
 	clock_t start;
 	
-	universe u = (universe) {2, malloc(u.num_bodies), 1e105, 0};
-	u.body[0] = (grav_body) {"Black Hole", 1e100, (vector) {0, 0, 0}, (vector) {0,0,0}};
-	u.body[1] = (grav_body) {"Comet", 1, (vector) {1e100, 0, 0}, (vector) {0, 8.16935738e-6, 0}};
-	
-	universe u_init = u;
-	
+	/*	so we can compare to Kepler's formulas for debugging purposes  */
 	double orbital_period = 7.691162248e105;
+	
+	universe u;
+	u.num_bodies = 2;
+	u.time_step = 1e105;
+	
+	u.body = calloc(u.num_bodies, sizeof(grav_body));
+	if (u.body == NULL)
+	{
+		print("unable to
+	}
 	
 	for (i = 0; i < 20; i++)
 	{
+		/*	reset the state of the universe  */
+		u.current_time = 0;
+		u.body[0] = (grav_body) {"Black Hole", 1e100, (vector) {0, 0, 0}, (vector) {0,0,0}};
+		u.body[1] = (grav_body) {"Comet", 1, (vector) {1e100, 0, 0}, (vector) {0, 8.16935738e-6, 0}};
+		
+		/*	prints the initial state only once  */
+		if (i == 0)
+		{
+			printf("----INITIAL STATE----\n");
+			print_universe(u);
+		}
+		
 		/*	starts the clock  */
 		start = clock();
 
-		for (j = 0; j * u.time_step < orbital_period; j++)
+		for (j = 0; u.current_time < orbital_period; j++)
 		{
 			simulate_grav_full(&u);
 		}
 
 		/*  ends the clock and displays time elapsed  */
 		printf("CPU time elapsed: %.2lf s\n", ((double) (clock() - start) / CLOCKS_PER_SEC));
-		printf("universe time elapsed: %.4e\n", u.current_time);
 		
-		/*	prints the current state of the universe  */
-		for (i = 0; i < u.num_bodies; i++)
-		{
-			print_grav_body(u.body[i]);
-		}
+		print_universe(u);
 		
-		printf("\n");
-		
-		u = u_init;
-		u.time_step *= 0.01;
+		u.time_step *= 0.1;
 	}
+	
+	free(u.body);
 	
 	/*	waits for the user to hit enter before exiting  */
 	fseek(stdin, 0, SEEK_END);
