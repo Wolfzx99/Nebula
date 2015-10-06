@@ -183,9 +183,16 @@ int main(void)
 	u.time_step = 1e105;
 	
 	u.body = calloc(u.num_bodies, sizeof(grav_body));
+	
+	/*	terminates if calloc fails  */
 	if (u.body == NULL)
 	{
-		print("unable to
+		printf("unable to allocate memory");
+		
+		/*	waits for the user to hit enter before exiting  */
+		fseek(stdin, 0, SEEK_END);
+		while(getchar() != '\n');
+		return(EXIT_SUCCESS);
 	}
 	
 	for (i = 0; i < 20; i++)
@@ -193,7 +200,7 @@ int main(void)
 		/*	reset the state of the universe  */
 		u.current_time = 0;
 		u.body[0] = (grav_body) {"Black Hole", 1e100, (vector) {0, 0, 0}, (vector) {0,0,0}};
-		u.body[1] = (grav_body) {"Comet", 1, (vector) {1e100, 0, 0}, (vector) {0, 8.16935738e-6, 0}};
+		u.body[1] = (grav_body) {"Comet", 1, (vector) {0, 1e100, 0}, (vector) {-8.16935738e-6, 0, 0}};
 		
 		/*	prints the initial state only once  */
 		if (i == 0)
