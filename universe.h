@@ -1,10 +1,10 @@
 
 /*
  *	project: nebula
- *	file: vector.h
+ *	file: universe.h
  *	
  *	description:
- *	header file for gravity.c
+ *	header file for universe.c
  */
  
 #include "vector.h"

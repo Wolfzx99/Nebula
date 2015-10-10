@@ -1,11 +1,12 @@
 
 /*
  *	project: nebula
- *	file: gravity.c
+ *	file: universe.c
  *	
  *	description:
  *	provides basic description of gravitational bodies
  *	provides functionality for simulating gravity
+ *	categorizes bodies into a universe
  */
  
 #include <stdio.h>
