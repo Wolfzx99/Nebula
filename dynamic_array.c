@@ -23,7 +23,17 @@ d_a->data = calloc(init_capacity, sizeof(void*));
 
 void * get(dyn_array * d_a, int i)
 {
-	return d_a->data[i];
+//	printf("size: %d, cap: %d, data pointer: %p\n", d_a->size, d_a->capacity, d_a->data[i]);
+	void * ptr = d_a->data[i];
+	if (i >= d_a->size)
+	{
+		printf("UNDEFINED, i=%d, size=%d\n", i, d_a->size);
+		return NULL;
+	}
+	else
+	{
+		return d_a->data[i];
+	}
 }
 
 static void double_capacity(dyn_array * d_a)
@@ -40,7 +50,7 @@ void append(dyn_array * d_a, void * item_ptr)
 	}
 	d_a->data[d_a->size] = item_ptr;
 	d_a->size += 1;
-	printf("size: %d, cap: %d, data pointer: %p\n", d_a->size, d_a->capacity, d_a->data);
+//	printf("size: %d, cap: %d, data pointer: %p\n", d_a->size, d_a->capacity, d_a->data[d_a->size - 1]);
 }
 
 void set(dyn_array * d_a, int i, void * item_ptr)
@@ -60,5 +70,6 @@ void set(dyn_array * d_a, int i, void * item_ptr)
 void erase(dyn_array * d_a, int i)
 {
 	d_a->data[i] = d_a->data[d_a->size - 1];
+	d_a->data[d_a->size - 1] = NULL;
 	d_a->size -= 1;
 }

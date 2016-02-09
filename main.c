@@ -26,12 +26,25 @@ int main(void)
 	
 	for (i = 0; i < 10; i++)
 	{
-		append(int_l, (void*)(&((empty) {100 + i})));
+		int * x = malloc(sizeof(int*));
+		*x = i + 100;
+//		printf("%p\n", x);
+		append(int_l, (void*) x);
 	}
 	
-	for (i = 0; i < 10; i++)
+	set(int_l, 4, (void*)(&((empty) {77})));	//improper way to create values to send (except in main())
+	
+	erase(int_l, 6);
+	
+	set(int_l, 20, (void*)(&((empty) {87})));	//improper way to create values to send (except in main())
+	
+	for (i = 0; i < 12; i++)
 	{
-		printf("%d\n", (*((empty*)get(int_l, i))).x);
+		void * temp = get(int_l, i);
+		if (temp != NULL)
+		{
+			printf("%d\n", (*((empty*)temp)).x);
+		}
 	}
 	
 	return 0;
