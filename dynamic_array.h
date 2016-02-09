@@ -17,7 +17,7 @@ typedef struct dyn_array
 	void ** data;
 } dyn_array;
 
-dyn_array * initialize();
+dyn_array * init();
 
 void * get();
 

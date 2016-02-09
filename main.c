@@ -21,14 +21,15 @@ typedef struct empty
 int main(void)
 {
 	int i;
-	dyn_array * int_l = initialize(8);
+	dyn_array * int_l;
+	int_l = init(int_l, 8);
 	
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 10; i++)
 	{
 		append(int_l, (void*)(&((empty) {100 + i})));
 	}
 	
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 10; i++)
 	{
 		printf("%d\n", (*((empty*)get(int_l, i))).x);
 	}

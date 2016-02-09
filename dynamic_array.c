@@ -13,10 +13,12 @@
 
 #include "dynamic_array.h"
 
-dyn_array * initialize(int init_capacity)
+dyn_array * init(dyn_array * d_a, int init_capacity)
 {
-	void ** data_ptr = calloc(init_capacity, sizeof(void*));
-	return & (dyn_array) {0, init_capacity, data_ptr};
+	d_a->size = 0;
+	d_a->capacity = init_capacity;
+d_a->data = calloc(init_capacity, sizeof(void*));
+	return d_a;
 }
 
 void * get(dyn_array * d_a, int i)
@@ -36,10 +38,9 @@ void append(dyn_array * d_a, void * item_ptr)
 	{
 		double_capacity(d_a);
 	}
-	printf("storing %p at %p\n", item_ptr, d_a->data);
 	d_a->data[d_a->size] = item_ptr;
-	printf("size: %d, cap: %d, data pointer: %p\n", d_a->size, d_a->capacity, d_a->data);
 	d_a->size += 1;
+	printf("size: %d, cap: %d, data pointer: %p\n", d_a->size, d_a->capacity, d_a->data);
 }
 
 void set(dyn_array * d_a, int i, void * item_ptr)
