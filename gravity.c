@@ -15,8 +15,7 @@
 
 #include "gravity.h"
 #include "vector.h"
-
-
+#include "dynamic_array.h"
 
 const double TAU = 6.28318530717958647692528676655900576839433879875;
 const double G = 6.67384e-11;

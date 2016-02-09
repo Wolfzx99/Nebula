@@ -39,7 +39,7 @@ extern double current_time;
 /*	number of objects in the universe  */
 extern int universe_size;
 
-void print_body(body a);
+void print_body();
 
 void print_universe();
 
@@ -48,7 +48,7 @@ void randomize_universe();
 
 /*	calculates the gravitational accelerations of a single two-body system;
 	adds these to their accelerations  */
-void simulate_grav_single(body *a, body *b);
+void simulate_grav_single();
 
 /*	makes a call to simulate each system individually exactly once  */
 void simulate_grav_full();

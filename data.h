@@ -7,8 +7,6 @@
  *	header file for data.c
  */
  
-#include "gravity.h"
- 
 #ifndef DATA_H
 #define DATA_H
 

@@ -14,11 +14,12 @@ typedef struct dyn_array
 {
 	int size;
 	int capacity;
-	int type_size;
-	void * data;
+	void ** data;
 } dyn_array;
 
 dyn_array * initialize();
+
+void * get();
 
 static void increase_capacity();
 
