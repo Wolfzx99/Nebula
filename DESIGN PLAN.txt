@@ -1,0 +1,20 @@
+The ultimate goal of Nebula is to remake Stars! for modern computers.  Thus, the "feel" of the game, should essentially be the same.  That being said, there are some changes that I would like to make in order to add to the realism and enrich the experience.  What follows is a work-in-progress list of what I would like to implement, in no particular order:
+
++	time dilation
+		Time should elapse at a rate dependent on the speed of that object relative to the origin; this will necessitate that turns pass for different players at different rates, and that, e.g., the resource-gathering rate on a planet traveling at a certain speed will be different from that on a spaceship traveling near the speed of light; I believe the easiest way to implement this would be to have a variable for every object in the universe which is recalculated everytime velocity is recalculated, and to multiply this by rates which are dependent on time, e.g., the resource-gathering rate; this seems like the easiest way to handle it, despite the fact that special relativity breaks down in high gravitational fields; general relativity would likely be too hard to implement.
++	relativity of simultaneity
+		At this point, I honestly have no idea how we might implement this, because it involves a lot more than just the soft multiplier implementation of my proposal above for time dilation; it might necessitate throwing out the notion of the origin entirely, which would be a nightmare for storing times and coordinates; furthermore, would it matter? I suppose it could in battles...
++	limited perspective
+		In simulation games of this type, you as a player are generally omniscient, at least with respect to your own troops, i.e., while there may be a fog-of-war blocking enemy troop movements and base goings-on from you, you know immediately what is happening to your entire city, kingdom, star system, etc.; in Nebula, you will not have this luxury; if you are on planet A and you want information from planet B, you must either send a ship there to collect the information and wait for it to come back to you, or you must travel there yourself; the difficulty I forsee with this system is in limiting the burden it puts on the player, because this system would rely heavily on trust in automation, especially in combat scenarios.
++	tech tree
+		I am not sure at this point of the extent to which I would like to change what already exists in Stars!; what does need to happen is that tech cannot be  civilization-wide, i.e. a lab on planet A and a lab on planet B cannot both be contributing to the same progress in science if they do not have correspondence.
++	scanning
+		Should the scanners work like they do in Stars!, where a planet knows about everything happening inside their scanner range, or should it be more like in reality, where you must point your telescope in a certain direction and hope you see something?  The latter system could be supplemented with a radar-type system that allows for short-range knowledge of incoming ships or meteors.
++	gravitational lensing
+		This is venturing into the unwanted realm of general relativity, but I think it would be cool.
++	FTL
+		I would like to steal a page from David Weber's book and use the n-bands as a means of FTL travel; this would necessitate some limits, such as the gravity well of a planet preventing travel beyond a certain point, perhaps with damage caused to the ship when this is violated.
++	wormholes/stargates
+		Should they exist only naturally, only as man-made structures, both, or not at all?  Should they allow for simultaneous travel?  Could they exist only for simultaneous sending of information, rather than matter?
++	combat
+		I love David Weber's method of combat, but would it matter?  And how can you implement strategy if it is being decided by your "captains"?  You as a player will never be involved in a battle (unless you are stupid), so battles might as well be represented by a series of probabilities and damage and protection values conferred by equiping ships with different weapons and armor...
