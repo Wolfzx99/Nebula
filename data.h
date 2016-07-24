@@ -6,27 +6,30 @@
  *	description:
  *	header file for data.c
  */
- 
+
+#include "array.h"
+#include "gravity.h"
+
 #ifndef DATA_H
 #define DATA_H
 
 typedef struct race
 {
-	char name[16];
+	char name[NAME_LENGTH];
 	
 	//add characteristics
 } race;
 
-typedef enum environment {arctic, temperate, desert, tropical, ocean} environment;
+typedef enum {arctic, temperate, desert, tropical, ocean} environment_t;
 
 typedef struct planet
 {
-	char name[16];
+	char name[NAME_LENGTH];
 	
 	/*	points back to master list  */
-	body *body;
+	object_t *obj;
 	
-	environment local_environment;
+	environment_t local_envir;
 	
 	unsigned long long population;
 	
@@ -54,27 +57,27 @@ typedef struct planet
 
 typedef struct ship
 {
-	char name[16];
+	char name[NAME_LENGTH];
 	
 	/*	points back to master list  */
-	body *body;
+	object_t *object;
 	
 	//add characteristics
 } ship;
 
 typedef struct player
 {
-	char name[16];
+	char name[NAME_LENGTH];
 	int score;
 	
 	race player_race;
 	
 	/*	the planet or ship from which the player makes decisions  */
-	body *current_location;
+	object_t *current_location;
 	
 	/*	points back to the master list  */
-	planet *player_planet[];
-	ship *player_ship[];
+//	planet *player_planet[];
+//	ship *player_ship[];
 } player;
 
 #endif

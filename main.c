@@ -1,94 +1,52 @@
 
-/*
- *	project: nebula
- *	file: main.c
- *	
- *	description:
- *	runs the simulator
- */
- 
-#include <stdlib.h>
-#include <stdio.h>
 #include <time.h>
 
-#include "dynamic_array.h"
-
-typedef struct empty
-{
-		int x;
-} empty;
+#include "gravity.h"
+#include "vector.h"
+#include "data.h"
 
 int main(void)
 {
-	int i;
-	dyn_array * int_l;
-	int_l = init(int_l, 8);
 	
-	for (i = 0; i < 10; i++)
+	/*  test  */
 	{
-		int * x = malloc(sizeof(int*));
-		*x = i + 100;
-//		printf("%p\n", x);
-		append(int_l, (void*) x);
-	}
-	
-	set(int_l, 4, (void*)(&((empty) {77})));	//improper way to create values to send (except in main())
-	
-	erase(int_l, 6);
-	
-	set(int_l, 20, (void*)(&((empty) {87})));	//improper way to create values to send (except in main())
-	
-	for (i = 0; i < 12; i++)
-	{
-		void * temp = get(int_l, i);
-		if (temp != NULL)
-		{
-			printf("%d\n", (*((empty*)temp)).x);
-		}
-	}
-	
-	return 0;
-}
-
-// #include "gravity.h"
-// #include "vector.h"
-// #include "data.h"
-
-// int main(void)
-// {
-	// clock_t start;
-	// double sim_time = 3.154e+7;
+		clock_t start;
+		double sim_time = 3.154e+7;
 		
-	// /*	sets parameters of gravity simulator  */
-	// const time_step = 1;
-	// current_time = 0;
-	// int universe_size = 2;
+		uni_init();
+		
+		object_t *a = malloc(sizeof(object_t));
+		object_t *b = malloc(sizeof(object_t));
+		
+		object_init(a, "Sol", 1.98855e30, null_v, null_v, null_v);
+		object_init(b, "Sol_001", 1e3, (vect_t) {5.9e9, 0, 0}, (vect_t) {0, 149978.8942, 0}, null_v);
+		
+		int err = object_array_append(uni, a);
+		printf("%d", err);
+		err = object_array_append(uni, b);
+		printf("%d", err);
+		
+		/*	prints the initial state  */
+		printf("----INITIAL STATE----\n");
+		print_uni();
+		
+		/*	starts the clock  */
+		start = clock();
+		while (current_time < sim_time)
+		{
+			simulate_grav();
+		}
 	
-	// /*  creates universe  */
-	// body universe[universe_size];
-	// universe[0] = (body) {"Sun", 1.98855e30, null_v, null_v, null_v};
-	// universe[1] = (body) {"Comet", 1e3, (vector) {5.9e9, 0, 0}, (vector) {0, 149978.8942, 0}, null_v};
-	
-	// /*	prints the initial state  */
-	// printf("----INITIAL STATE----\n");
-	// print_universe();
-	
-	// /*	starts the clock  */
-	// start = clock();
-	// while (current_time < sim_time)
-	// {
-		// simulate_grav_full();
-	// }
+		/*	prints the final state  */
+		printf("----FINAL STATE----\n");
+		print_uni();
+		
+		/*  ends the clock and displays time elapsed  */
+		printf("CPU time elapsed: %.2lf s\n", ((double) (clock() - start) / CLOCKS_PER_SEC));
+	}
 
-	// /*	prints the final state  */
-	// printf("----FINAL STATE----\n");
-	// print_universe();
-	
-	// /*  ends the clock and displays time elapsed  */
-	// printf("CPU time elapsed: %.2lf s\n", ((double) (clock() - start) / CLOCKS_PER_SEC));
-	
-	// /*	waits for the user to hit enter before exiting  */
-	// fseek(stdin, 0, SEEK_END);
-	// while(getchar() != '\n');
-	// return(EXIT_SUCCESS);
-// }
+	/*	waits for the user to hit enter before exiting  */
+	fseek(stdin, 0, SEEK_END);
+	while(getchar() != '\n');
+	return(EXIT_SUCCESS);
+}

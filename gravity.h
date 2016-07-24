@@ -7,50 +7,41 @@
  *	header file for gravity.c
  */
  
-#include "vector.h"
- 
 #ifndef GRAVITY_H
 #define GRAVITY_H
 
-/*	a body which experiences gravitational force  */
-typedef struct body
+#include "vector.h"
+#include "array.h"
+
+#define G 6.67384e-11
+
+#define NAME_LENGTH 16
+#define INIT_CAPACITY 100
+#define TIME_STEP 1
+
+/*	an object which experiences gravitational force  */
+typedef struct
 {
-	char name[16];
+	char name[NAME_LENGTH];
 	double mass;
-	vector position;
-	vector velocity;
-	vector acceleration;
-} body;
+	vect_t pos;
+	vect_t vel;
+	vect_t acc;
+} object_t;
 
-extern body universe[];
+ARRAY_HEADER(object, object_t)
 
-/*	a number twice as great as pi  */
-extern const double TAU;
+object_array_t *uni;
 
-/*	gravitational constant  */
-extern const double G;
-
-/*	the precision of the simulation (in seconds)  */
-extern const double time_step;
-	
 /*	time since the simulation began (in seconds)  */
-extern double current_time;
+double current_time;
 
-/*	number of objects in the universe  */
-extern int universe_size;
+void object_init();
 
-void print_body();
+void uni_init();
 
-void print_universe();
+void print_uni();
 
-/*	gives every body a random mass, position, and velocity  */
-void randomize_universe();
-
-/*	calculates the gravitational accelerations of a single two-body system;
-	adds these to their accelerations  */
-void simulate_grav_single();
-
-/*	makes a call to simulate each system individually exactly once  */
-void simulate_grav_full();
+void simulate_grav();
 
 #endif
