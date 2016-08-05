@@ -29,9 +29,9 @@ typedef struct
 	vect_t acc;
 } object_t;
 
-ARRAY_HEADER(object, object_t)
+ARRAY_HEADER(object, object_t *)
 
-object_array_t *uni;
+object_array_t uni;
 
 /*	time since the simulation began (in seconds)  */
 double current_time;

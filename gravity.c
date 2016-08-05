@@ -12,16 +12,17 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 #include "gravity.h"
 
-ARRAY_SOURCE(object, object_t)
+ARRAY_SOURCE(object, object_t *)
 
 void object_init(object_t *obj, char name[NAME_LENGTH], double mass, vect_t pos, vect_t vel, vect_t acc)
 {
 	size_t i;
 	
-	for (i = 0; i < NAME_LENGTH; i++) { obj->name[i] = name[i]; }
+	strcpy(obj->name, name);
 	obj->mass = mass;
 	obj->pos = pos;
 	obj->vel = vel;
@@ -31,8 +32,7 @@ void object_init(object_t *obj, char name[NAME_LENGTH], double mass, vect_t pos,
 void uni_init()
 {
 	/*	sets up the universe  */
-	uni = malloc(sizeof(object_array_t));
-	object_array_init(uni, INIT_CAPACITY);
+	object_array_init(&uni, INIT_CAPACITY);
 	
 	current_time = 0;
 } 
@@ -43,14 +43,10 @@ void print_uni()
 	
 	printf("universe time: %d\ntime step: %d\n\n", current_time, TIME_STEP);
 	
-	for (i = 0; i < uni->size; i++)
+	for (i = 0; i < uni.size; i++)
 	{
-		printf("%d out of %d", i, uni->size);
-		printf("works");
 		object_t *obj;
-		printf("works");
-		printf("%d", object_array_get(uni, i, obj));
-		printf("works");
+		object_array_get(&uni, i, &obj);
 		printf("\t[%s]\n\tmass: %.2e\n\tpos: <%.2e,%.2e,%.2e>\n\tvel: <%.2e,%.2e,%.2e>\n", obj->name, obj->mass, obj->pos.x, obj->pos.y, obj->pos.z, obj->vel.x, obj->vel.y, obj->vel.z);
 	}
 	
@@ -63,21 +59,19 @@ void simulate_grav()
 	size_t i, j;
 	object_t *obj_i, *obj_j;
 	
-	for (i = 0; i < uni->size; i++)
+	for (i = 0; i < uni.size; i++)
 	{
-		object_array_get(uni, i, obj_i);
+		object_array_get(&uni, i, &obj_i);
 		
 		/*  calculates net gravitational acceleration on i for all j  */
-		for (j = i + 1; j < uni->size; j++)
+		for (j = i + 1; j < uni.size; j++)
 		{
-			object_array_get(uni, j, obj_j);
+			object_array_get(&uni, j, &obj_j);
 			
 			vect_t dist = subtract(obj_j->pos, obj_i->pos);
 			vect_t grav_force = scale(normalize(dist), (G * obj_i->mass * obj_j->mass / pow(magnitude(dist), 2)));
 			obj_i->acc = add(obj_i->acc, scale(grav_force, 1 / obj_i->mass));
 			obj_j->acc = add(obj_j->acc, scale(negate(grav_force), 1 / obj_j->mass));
-			
-			MUST OBJEECT_ARRAY_SET()
 		}
 		
 		/*	alters position and velocity of all objects  */
