@@ -6,72 +6,81 @@
  *	description:
  *	provides basic description of gravitational bodies
  *	provides functionality for simulating gravity
+ *	categorizes bodies into a universe
  */
  
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 #include "gravity.h"
-#include "vector.h"
 
-/*	a number twice as great as pi  */
-const double TAU = 6.28318530717958647692528676655900576839433879875;
+ARRAY_SOURCE(object, object_t *)
 
-/*	gravitational constant  */
-const double G = 6.67384e-11;
-
-void print_grav_body(grav_body a)
+void object_init(object_t *obj, char name[NAME_LENGTH], double mass, vect_t pos, vect_t vel, vect_t acc)
 {
-	printf("\t[%s]\n\tmass: %.2e\n\tposition: <%.2e,%.2e,%.2e>\n\tvelocity: <%.2e,%.2e,%.2e>\n", a.name, a.mass, a.position.x, a.position.y, a.position.z, a.velocity.x, a.velocity.y, a.velocity.z);
+	size_t i;
+	
+	strcpy(obj->name, name);
+	obj->mass = mass;
+	obj->pos = pos;
+	obj->vel = vel;
+	obj->acc = acc;
 }
 
-void print_universe(universe u)
+void uni_init()
 {
-	int i;
+	/*	sets up the universe  */
+	object_array_init(&uni, INIT_CAPACITY);
 	
-	printf("universe time: %.2e\ntime step: %.2e\n\n", u.current_time, u.time_step);
+	current_time = 0;
+} 
+
+void print_uni()
+{
+	size_t i;
 	
-	for (i = 0; i < u.num_bodies; i++)
+	printf("universe time: %d\ntime step: %d\n\n", current_time, TIME_STEP);
+	
+	for (i = 0; i < uni.size; i++)
 	{
-		print_grav_body(u.body[i]);
+		object_t *obj;
+		object_array_get(&uni, i, &obj);
+		printf("\t[%s]\n\tmass: %.2e\n\tpos: <%.2e,%.2e,%.2e>\n\tvel: <%.2e,%.2e,%.2e>\n", obj->name, obj->mass, obj->pos.x, obj->pos.y, obj->pos.z, obj->vel.x, obj->vel.y, obj->vel.z);
 	}
 	
 	printf("\n");
 }
 
-/*	calculates the gravitational accelerations of a single two-body system;
-	adds these to their accelerations  */
-void simulate_grav_single(grav_body *a, grav_body *b)
+/*	simulates gravity for a time equal to TIME_STEP  */
+void simulate_grav()
 {
-	vector dist = subtract(b->position, a->position);
-	vector grav_force = scale(normalize(dist), (G * a->mass * b->mass / pow(magnitude(dist), 2)));
-	a->acceleration = add(a->acceleration, scale(grav_force, 1 / a->mass));
-	b->acceleration = add(b->acceleration, scale(negate(grav_force), 1 / b->mass));
-}
-
-/*	makes a call to simulate each system individually exactly once  */
-void simulate_grav_full(universe *u)
-{
-	int i, j;
+	size_t i, j;
+	object_t *obj_i, *obj_j;
 	
-	/*	resets acceleration of each body to zero  */
-	for (i = 0; i < u->num_bodies; i++)
+	for (i = 0; i < uni.size; i++)
 	{
-		u->body[i].acceleration = null_v;
-	}
-	
-	for (i = 0; i < u->num_bodies; i++)
-	{	
-		for (j = i + 1; j < u->num_bodies; j++)
+		object_array_get(&uni, i, &obj_i);
+		
+		/*  calculates net gravitational acceleration on i for all j  */
+		for (j = i + 1; j < uni.size; j++)
 		{
-			simulate_grav_single(&u->body[i], &u->body[j]);
+			object_array_get(&uni, j, &obj_j);
+			
+			vect_t dist = subtract(obj_j->pos, obj_i->pos);
+			vect_t grav_force = scale(normalize(dist), (G * obj_i->mass * obj_j->mass / pow(magnitude(dist), 2)));
+			obj_i->acc = add(obj_i->acc, scale(grav_force, 1 / obj_i->mass));
+			obj_j->acc = add(obj_j->acc, scale(negate(grav_force), 1 / obj_j->mass));
 		}
 		
-		/*	iterates using the basic kinematics equations over time_step  */
-		u->body[i].position = add(u->body[i].position, add(scale(u->body[i].velocity, u->time_step), scale(u->body[i].acceleration, 0.5 * pow(u->time_step, 2))));
-		u->body[i].velocity = add(u->body[i].velocity, scale(u->body[i].acceleration, u->time_step));
+		/*	alters position and velocity of all objects  */
+		obj_i->pos = add(obj_i->pos, add(scale(obj_i->vel, TIME_STEP), scale(obj_i->acc, 0.5 * pow(TIME_STEP, 2))));
+		obj_i->vel = add(obj_i->vel, scale(obj_i->acc, TIME_STEP));
+		
+		/*	sets acceleration equal to 0  */
+		obj_i->acc = null_v;
 	}
 	
-	u->current_time += u->time_step;
+	current_time += TIME_STEP;
 }

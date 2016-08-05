@@ -11,37 +11,37 @@
 #define VECTOR_H
 
 /*	a three-dimensional euclidean vector  */
-typedef struct vector
+typedef struct vect_t
 {
 	double x;
 	double y;
 	double z;
-} vector;
+} vect_t;
 
-extern const vector null_v;
+extern const vect_t null_v;
 
 /*	negates the direction of one vector  */
-vector negate(vector a);
+vect_t negate(vect_t a);
 
 /*  scales one vector by a constant  */
-vector scale(vector a, double k);
+vect_t scale(vect_t a, double k);
 
 /*  calculates the length of one vector  */
-double magnitude(vector a);
+double magnitude(vect_t a);
 
 /*	normalizes one vector into its unit vector  */
-vector normalize(vector a);
+vect_t normalize(vect_t a);
 
 /*	calculates the sum of two vectors  */
-vector add(vector a, vector b);
+vect_t add(vect_t a, vect_t b);
 
 /*	calculates the difference of two vectors  */
-vector subtract(vector a, vector b);
+vect_t subtract(vect_t a, vect_t b);
 
 /*	calculates the dot product of two vectors  */
-double dot(vector a, vector b);
+double dot(vect_t a, vect_t b);
 
 /*	calculates the cross product of two vectors  */
-vector cross(vector a, vector b);
+vect_t cross(vect_t a, vect_t b);
 
 #endif

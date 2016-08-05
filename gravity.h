@@ -1,59 +1,47 @@
 
 /*
  *	project: nebula
- *	file: vector.h
+ *	file: gravity.h
  *	
  *	description:
  *	header file for gravity.c
  */
  
-#include "vector.h"
- 
 #ifndef GRAVITY_H
 #define GRAVITY_H
 
-/*	a number twice as great as pi  */
-extern const double TAU;
+#include "vector.h"
+#include "array.h"
 
-/*	gravitational constant  */
-extern const double G;
+#define G 6.67384e-11
 
-/*	a body which experiences gravitational force  */
-typedef struct grav_body
+#define NAME_LENGTH 16
+#define INIT_CAPACITY 100
+#define TIME_STEP 1
+
+/*	an object which experiences gravitational force  */
+typedef struct
 {
-	char name[32];
+	char name[NAME_LENGTH];
 	double mass;
-	vector position;
-	vector velocity;
-	vector acceleration;
-} grav_body;
+	vect_t pos;
+	vect_t vel;
+	vect_t acc;
+} object_t;
 
-void print_grav_body(grav_body a);
+ARRAY_HEADER(object, object_t *)
 
-/*	a universe defined in terms its state, its precision, and its current time  */
-typedef struct universe
-{		
-	/*	defines an array containing grav_bodies  */
-	int num_bodies;
-	grav_body * body;
-	
-	/*	the precision of the simulation (in seconds) */
-	double time_step;
-	
-	/*	time since the simulation began (in seconds)  */
-	double current_time;
-} universe;
+object_array_t uni;
 
-void print_universe(universe u);
+/*	time since the simulation began (in seconds)  */
+double current_time;
 
-/*	gives every body a random mass, position, and velocity  */
-void randomize_universe(universe u);
+void object_init();
 
-/*	calculates the gravitational accelerations of a single two-body system;
-	adds these to their accelerations  */
-void simulate_grav_single(grav_body *a, grav_body *b);
+void uni_init();
 
-/*	makes a call to simulate each system individually exactly once  */
-void simulate_grav_full(universe *u);
+void print_uni();
+
+void simulate_grav();
 
 #endif

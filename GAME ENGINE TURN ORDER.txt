@@ -1,0 +1,9 @@
+1.
+
+2.
+
+3.
+
+4.	Spaceships add their accelerations.
+
+5.	Simulate Gravity--resets acceleration to 0.
